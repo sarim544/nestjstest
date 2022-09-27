@@ -187,7 +187,18 @@ export class EventController {
      */
 
   @Get('futureevents')
-  getFutureEventWithWorkshops() {
+  async getFutureEventWithWorkshops() {
+    const events: any[] = await this.eventRepository.query(
+      'SELECT e.* FROM `events` e JOIN `workshops` w on e.id=w.event_id WHERE w.start> now() GROUP BY e.id',
+    );
+    for (const event of events) {
+      event.workshops = await this.workshopRepository.findBy({
+        event_id: event.id,
+      });
+    }
+    console.log('events => ', events);
+    //Implement in coding task 1
+    return events;
     //implement in coding task2
     return [];
   }
